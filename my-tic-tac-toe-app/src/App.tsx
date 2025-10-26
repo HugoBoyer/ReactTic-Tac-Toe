@@ -10,11 +10,22 @@ function Square({value,onSquareClick}) {
 }
 
 function App() {
+  const [xisNext, setXIsNext] = useState(true)
   const [squares, setSquares] = useState(Array(9).fill(null)) 
-  function handleClick(i) {
+
+  function handleClick(i: number) {
     const nextSquares = squares.slice() // copie le tableau
-    nextSquares[i] = 'X'
+    if(squares[i] !== null) {
+      return
+    }
+    if (xisNext) {
+      nextSquares[i] = 'X'
+    } else {
+      nextSquares[i] = 'O'
+    }
     setSquares(nextSquares) // met a jour l'état
+    setXIsNext(!xisNext) // change le joueur
+
   }
   return (
     <>
