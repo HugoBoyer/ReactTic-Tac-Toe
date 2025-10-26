@@ -9,52 +9,97 @@ function Square({value,onSquareClick}) {
   ) 
 }
 
-function App() {
-  const [xisNext, setXIsNext] = useState(true)
-  const [squares, setSquares] = useState(Array(9).fill(null)) 
-  let status;
-  const winner = calculateWinner(squares)
-  if (winner) {
-    status = "Winner: " + winner
-  } else {
-    status = "Next Player: " + (xisNext ? "X" : "O")
-  }
-  
+
+function App({xisNext, squares, onPlay}) {
   function handleClick(i: number) {
-    const nextSquares = squares.slice() // copie le tableau
-    if(squares[i] !== null || calculateWinner(squares)) {
+    if(calculateWinner(squares) || squares[i] !== null) {
       return
     }
+    const nextSquares = squares.slice() // copie le tableau
     if (xisNext) {
       nextSquares[i] = 'X'
     } else {
       nextSquares[i] = 'O'
     }
-    setSquares(nextSquares) // met a jour l'état
-    setXIsNext(!xisNext) // change le joueur
 
+    onPlay(nextSquares)
+    
   }
+
+  const winner = calculateWinner(squares);
+  let status;
+  if (winner) {
+    status = "Winner: " + winner
+  } else {
+    status = "Next Player: " + (xisNext ? "X" : "O")
+  }
+
   return (
     <>
-    <div>{status}</div>
-    <div className="board-row">   
-      <Square value={squares[0]} onSquareClick={() => handleClick(0)} />
-      <Square value={squares[1]} onSquareClick={() => handleClick(1)}/>
-      <Square value={squares[2]} onSquareClick={() => handleClick(2)}/>
-    </div>
-    <div className="board-row">
-      <Square value={squares[3]} onSquareClick={() => handleClick(3)}/>
-      <Square value={squares[4]} onSquareClick={() => handleClick(4)}/>
-      <Square value={squares[5]} onSquareClick={() => handleClick(5)}/>
-    </div>
-    <div className="board-row">
-      <Square value={squares[6]} onSquareClick={() => handleClick(6)}/>
-      <Square value={squares[7]} onSquareClick={() => handleClick(7)}/>
-      <Square value={squares[8]} onSquareClick={() => handleClick(8)}/>
-    </div>
+      <div>{status}</div>
+      <div className="board-row">   
+        <Square value={squares[0]} onSquareClick={() => handleClick(0)} />
+        <Square value={squares[1]} onSquareClick={() => handleClick(1)}/>
+        <Square value={squares[2]} onSquareClick={() => handleClick(2)}/>
+      </div>
+      <div className="board-row">
+        <Square value={squares[3]} onSquareClick={() => handleClick(3)}/>
+        <Square value={squares[4]} onSquareClick={() => handleClick(4)}/>
+        <Square value={squares[5]} onSquareClick={() => handleClick(5)}/>
+      </div>
+      <div className="board-row">
+        <Square value={squares[6]} onSquareClick={() => handleClick(6)}/>
+        <Square value={squares[7]} onSquareClick={() => handleClick(7)}/>
+        <Square value={squares[8]} onSquareClick={() => handleClick(8)}/>
+      </div>
     </>
   )
 }
+
+export default function Game() {
+  const [xisNext, setXIsNext] = useState(true)
+  const [history, setHistory] = useState([Array(9).fill(null)])
+  const currentSquare = history[history.length - 1] 
+  const [currentMove, setCurrentMove] = useState(0)
+  
+  
+  function handlePlay(nextSquares) {
+    setHistory([...history, nextSquares])
+    setXIsNext(!xisNext) // Change le joueur   
+  }
+  
+  function toMove(nextMove) {
+    setCurrentMove(nextMove)
+    setXIsNext(nextMove % 2 === 0)
+  }
+  
+  const moves = history.map((squares, move) => {
+    let description;
+    if (move > 0) {
+      description = "Aller au coup #" + move
+    } else {
+      description = "Revenir au debut"
+    }
+  return (
+    <li key={move}>
+      <button onClick={() => toMove(move)}>{description}</button>
+    </li>
+  )
+})
+
+
+  return (
+    <div>
+      <div>
+        <App xisNext={xisNext} squares={currentSquare} onPlay={handlePlay} />
+      </div>
+      <div>
+        <ol>{moves}</ol>
+      </div>
+    </div>
+  )
+}
+
 
 function calculateWinner(squares) {
   const lines = [
@@ -79,5 +124,3 @@ function calculateWinner(squares) {
   return null
 }
 
-
-export default App
