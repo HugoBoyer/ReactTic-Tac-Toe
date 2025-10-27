@@ -28,7 +28,7 @@ function FilterableProductTable({listProducts}) {
     <>
       <div>
         <div>
-          <input type='text' placeholder='Seach...' />
+          
         </div>
         <div>
           <SearchBar />
@@ -44,13 +44,36 @@ function FilterableProductTable({listProducts}) {
 function SearchBar() {
   return (
     <>
-      <input type='checkbox' />
-      <label>Only show products in stock</label>
+      <form >
+        <input type='text' placeholder='Seach...' />
+        <label>
+          <input type='checkbox' />
+          Only show products in stock
+        </label>
+      </form>
     </>
   )
 }
 
 function ProductTable({listProducts}) {
+  const rows = [];
+  let lastCategory = null;
+
+  listProducts.forEach((prod) => {
+    if(prod.category !== lastCategory) {
+      rows.push(
+        <ProductCategoryRow 
+          category={prod.category} 
+          key={prod.category} />
+        )
+    }
+    rows.push(
+        <ProductRow 
+          prod={prod} 
+          key={prod.name}/>
+        )
+    lastCategory = prod.category
+  })
   return (
     <>
       <table>
@@ -61,37 +84,30 @@ function ProductTable({listProducts}) {
           </tr>  
         </thead>
         <tbody>
-          <ProductCategoryRow categorie={listProducts.categorie}/>
-          <ProductRow listProducts={listProducts} />
-        </tbody>
-        <tbody>
-          <ProductCategoryRow categorie="Vegetables"/>
-          <ProductRow listProducts={listProducts} />
+          {rows}
         </tbody>
       </table>
     </>
   )
 }
 
-function ProductCategoryRow({categorie}) {
+function ProductCategoryRow({category}) {
   return (
     <>
       <tr>
-        <th colSpan="2">{categorie}</th>
+        <th colSpan="2">{category}</th>
       </tr>
     </>
   )
 }
 
-function ProductRow({listProducts}) {
+function ProductRow({prod}) {
   return (
     <>
-    {listProducts.map((prod) => (
       <tr>
         <td>{prod.name}</td>
         <td>{prod.price}</td>
       </tr>
-    ))}
     </>
   )
 }
