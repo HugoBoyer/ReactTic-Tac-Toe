@@ -1,5 +1,5 @@
-
 import Board from './tictactoe/Board'
+
 
 export default function App() {
   const products = [
@@ -26,17 +26,8 @@ export default function App() {
 function FilterableProductTable({listProducts}) {
   return (
     <>
-      <div>
-        <div>
-          
-        </div>
-        <div>
-          <SearchBar />
-        </div>
-      </div>
-      <div>
+        <SearchBar />
         <ProductTable listProducts={listProducts} />
-      </div>
     </>
   )
 }
@@ -44,8 +35,9 @@ function FilterableProductTable({listProducts}) {
 function SearchBar() {
   return (
     <>
-      <form >
+      <form>
         <input type='text' placeholder='Seach...' />
+        <br/>
         <label>
           <input type='checkbox' />
           Only show products in stock
@@ -102,10 +94,12 @@ function ProductCategoryRow({category}) {
 }
 
 function ProductRow({prod}) {
+  const name = prod.stocked ? prod.name : 
+    <span style={{ color: "red"}}>{prod.name}</span>
   return (
     <>
       <tr>
-        <td>{prod.name}</td>
+        <td>{name}</td>
         <td>{prod.price}</td>
       </tr>
     </>
