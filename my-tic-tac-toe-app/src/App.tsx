@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import Board from './tictactoe/Board'
 
 
@@ -24,22 +25,44 @@ export default function App() {
 }
 
 function FilterableProductTable({listProducts}) {
+  const [filterText, setFilterText] = useState('')
+  const [inStockOnly, setInStockOnly] = useState(false)
   return (
     <>
-        <SearchBar />
-        <ProductTable listProducts={listProducts} />
+        <SearchBar 
+          filterText={filterText} 
+          inStockOnly={inStockOnly}
+          onFilterTextChange={setFilterText}
+          onInStockOnlyChange={setInStockOnly}
+          />
+        <ProductTable 
+          listProducts={listProducts} 
+          filterText={filterText} 
+          inStockOnly={inStockOnly} />
     </>
   )
 }
 
-function SearchBar() {
+function SearchBar({
+  filterText,
+  inStockOnly,
+  onFilterTextChange,
+  onInStockOnlyChange
+}) {
   return (
     <>
       <form>
-        <input type='text' placeholder='Seach...' />
+        <input type='text' 
+        placeholder='Seach...' 
+        value={filterText}
+        onChange={(e) => onFilterTextChange(e.target.value)}/>
+
         <br/>
         <label>
-          <input type='checkbox' />
+          <input 
+            type='checkbox' 
+            checked={inStockOnly} 
+            onChange={(e) => onInStockOnlyChange(e.target.checked)}/>
           Only show products in stock
         </label>
       </form>
@@ -47,11 +70,21 @@ function SearchBar() {
   )
 }
 
-function ProductTable({listProducts}) {
+function ProductTable({listProducts, filterText, inStockOnly}) {
+  
+  
+  
   const rows = [];
   let lastCategory = null;
-
+  
   listProducts.forEach((prod) => {
+    if(prod.name.toLowerCase().indexOf(filterText.toLowerCase()) === -1) {
+      return
+    }
+    if(inStockOnly && !prod.stocked) {
+      return false;
+    }
+
     if(prod.category !== lastCategory) {
       rows.push(
         <ProductCategoryRow 
@@ -66,6 +99,7 @@ function ProductTable({listProducts}) {
         )
     lastCategory = prod.category
   })
+
   return (
     <>
       <table>
